@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 
 # -------------------------------------------------------------
-# 1. Page Configuration & High-Contrast Light Theme
+# 1. Page Configuration & High-Contrast Light Theme + Animations
 # -------------------------------------------------------------
 st.set_page_config(
     page_title="QuickCare — PCMC & Pune Emergency Tracker", 
@@ -19,38 +19,63 @@ st.markdown("""
         color: #0F172A !important;
         font-family: 'Inter', system-ui, sans-serif;
     }
-    
-    /* Header Container */
-    .header-box {
-        background-color: #FFFFFF;
-        border: 2px solid #E2E8F0;
-        border-radius: 16px;
-        padding: 20px 24px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
 
-    /* Subtitle Badge: Dark Blue Background with Crisp White Text */
+    /* Subtitle Badge: Dark Blue Pill Background */
     .subtitle-badge {
-        background-color: #1E40AF;
-        border-radius: 8px;
-        padding: 10px 18px;
+        background: #0F172A;
+        border: 2px solid #2563EB;
+        border-radius: 30px;
+        padding: 8px 20px;
         display: inline-flex;
         align-items: center;
         gap: 12px;
         margin-top: 10px;
-        box-shadow: 0 4px 10px rgba(30, 64, 175, 0.25);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
     }
 
-    .subtitle-text {
-        color: #FFFFFF !important;
+    /* Animated Glowing & Shimmering Subtitle Text */
+    .animated-subtitle-text {
         font-weight: 800 !important;
         font-size: 0.95rem !important;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         margin: 0;
+        text-transform: uppercase;
+        
+        /* Shimmer Gradient Effect */
+        background: linear-gradient(
+            90deg, 
+            #60A5FA 0%, 
+            #FFFFFF 30%, 
+            #93C5FD 50%, 
+            #FFFFFF 70%, 
+            #60A5FA 100%
+        );
+        background-size: 200% auto;
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+        
+        /* Keyframe Animations: Shimmer Slide + Text Pulse Glow */
+        animation: shimmer 3s linear infinite, glowPulse 2s ease-in-out infinite alternate;
     }
 
-    /* Pulsing Bright Green Dot */
+    /* Shimmer movement keyframe */
+    @keyframes shimmer {
+        0% { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
+
+    /* Soft text pulse glow keyframe */
+    @keyframes glowPulse {
+        0% {
+            filter: drop-shadow(0 0 2px rgba(96, 165, 250, 0.4));
+        }
+        100% {
+            filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.9));
+        }
+    }
+
+    /* Blinking Bright Green Dot */
     .pulse-dot {
         width: 12px;
         height: 12px;
@@ -58,16 +83,17 @@ st.markdown("""
         border: 2px solid #FFFFFF;
         border-radius: 50%;
         display: inline-block;
-        animation: blink 1.5s infinite;
+        animation: blink 1.2s infinite ease-in-out;
+        box-shadow: 0 0 10px #22C55E;
     }
 
     @keyframes blink {
         0% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(0.85); }
+        50% { opacity: 0.3; transform: scale(0.85); }
         100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Hospital Cards: White background with high-contrast text */
+    /* Hospital Cards: White background with crisp border */
     div[data-testid="stExpander"] {
         border: 2px solid #CBD5E1 !important;
         border-radius: 14px !important;
@@ -110,7 +136,7 @@ st.markdown("""
         margin-top: 6px;
     }
 
-    /* Primary Buttons */
+    /* Buttons */
     div.stButton > button {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
@@ -126,7 +152,7 @@ st.markdown("""
         background-color: #1D4ED8 !important;
     }
 
-    /* Explicit Dark Text Rules for Form Labels */
+    /* Dark Text Rules */
     label, p, h1, h2, h3, h4, span {
         color: #0F172A !important;
     }
@@ -134,7 +160,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 2. Header Section
+# 2. Header Section with Animated Subtitle Line
 # -------------------------------------------------------------
 head_col1, head_col2 = st.columns([1, 8])
 
@@ -144,10 +170,11 @@ with head_col1:
 with head_col2:
     st.title("QuickCare")
     
+    # Animated Subtitle Line
     st.markdown("""
         <div class="subtitle-badge">
             <span class="pulse-dot"></span>
-            <p class="subtitle-text">⚡ REAL-TIME EMERGENCY HOSPITAL & ICU BED TRACKER — PCMC & PUNE</p>
+            <span class="animated-subtitle-text">⚡ REAL-TIME EMERGENCY HOSPITAL & ICU BED TRACKER — PCMC & PUNE</span>
         </div>
     """, unsafe_allow_html=True)
 
@@ -164,7 +191,7 @@ client_id = st.sidebar.text_input("Client ID / Org ID")
 data_source = st.sidebar.radio("Data Source Mode", ["Local PCMC Directory", "Connect Live API Stream"])
 
 # -------------------------------------------------------------
-# 4. Verified Hospital Dataset
+# 4. Hospital Dataset
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
     if mode == "Connect Live API Stream" and key and c_id:
@@ -263,7 +290,7 @@ else:
         with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
             img_col, info_col, blood_col, action_col = st.columns([1.5, 1.2, 1.3, 1.1])
             
-            # Column 1: Clean Hospital Exterior Image
+            # Column 1: Hospital Image
             with img_col:
                 img_url = row.get("Outside_Img", "")
                 if img_url:
@@ -288,7 +315,7 @@ else:
                 st.info(row["Blood Stocks"])
                 st.caption(f"**Doctor Shifts:** {row['Doctor Shifts']}")
                 
-            # Column 4: Reservation Ticket
+            # Column 4: Bed Reservation
             with action_col:
                 st.markdown("<h4 style='color: #0F172A; margin-bottom: 8px;'>📝 Reserve Bed</h4>", unsafe_allow_html=True)
                 p_name = st.text_input("Patient Full Name", key=f"p_{index}")
