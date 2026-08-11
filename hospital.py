@@ -3,112 +3,173 @@ import pandas as pd
 import requests
 
 # -------------------------------------------------------------
-# 1. Page Configuration & Modern CSS Styling
+# 1. Page Configuration & Custom CSS Animations
 # -------------------------------------------------------------
 st.set_page_config(
-    page_title="QuickCare — PCMC & Pune Emergency Tracker", 
+    page_title="QuickCare — Emergency Tracker", 
     layout="wide", 
     page_icon="⚡"
 )
 
+# Custom Styling with Pulse Animations and Clean Card Design
 st.markdown("""
     <style>
+    /* Main Background */
     .stApp {
-        background-color: #F8FAFC;
+        background-color: #0B0F19;
+        color: #F3F4F6;
         font-family: 'Inter', sans-serif;
     }
     
+    /* Animated Header Box */
+    .animated-header {
+        background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #311042 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        padding: 24px 30px;
+        box-shadow: 0 10px 30px -10px rgba(168, 85, 247, 0.3);
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+    
+    /* Pulse Badge */
+    .live-dot {
+        height: 12px;
+        width: 12px;
+        background-color: #22C55E;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 0 rgba(34, 197, 94, 0.7);
+        animation: pulse 1.8s infinite;
+        margin-right: 8px;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+        }
+    }
+
     /* Expander Container Styling */
     div[data-testid="stExpander"] {
-        border: 1px solid #E2E8F0;
-        border-radius: 14px;
-        background-color: #ffffff;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background-color: #111827;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
         margin-bottom: 18px;
     }
     
-    /* QuickCare Badges */
+    /* Styled Badges */
     .badge-eta {
-        background-color: #EFF6FF;
-        color: #1D4ED8;
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #60A5FA;
         font-weight: 600;
         padding: 6px 12px;
         border-radius: 8px;
         font-size: 0.88rem;
-        border: 1px solid #BFDBFE;
+        border: 1px solid rgba(96, 165, 250, 0.3);
         display: inline-block;
     }
     .badge-emergency {
-        background-color: #FEF2F2;
-        color: #DC2626;
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #F87171;
         font-weight: 600;
         padding: 6px 12px;
         border-radius: 8px;
         font-size: 0.88rem;
-        border: 1px solid #FECACA;
+        border: 1px solid rgba(248, 113, 113, 0.3);
         display: inline-block;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 2. Native Header with QuickCare Branding
+# 2. Animated Pulse Line Header
 # -------------------------------------------------------------
-header_col1, header_col2 = st.columns([1, 6])
+animated_pulse_svg = """
+<svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Glowing Shield Circle -->
+  <circle cx="50" cy="50" r="45" fill="#1E293B" stroke="#3B82F6" stroke-width="2"/>
+  <circle cx="50" cy="50" r="38" fill="#0F172A"/>
+  
+  <!-- Animated Electrocardiogram (ECG) Pulse Line -->
+  <path d="M10 50 H32 L38 35 L44 65 L52 20 L60 75 L66 45 L72 50 H90" 
+        stroke="#EC4899" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <animate attributeName="stroke-dasharray" from="0, 300" to="300, 0" dur="2s" repeatCount="indefinite" />
+  </path>
+</svg>
+"""
 
-with header_col1:
-    # Reliable vector-style QuickCare emblem link
-    st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=75)
-
-with header_col2:
-    st.title("QuickCare")
-    st.caption("⚡ Real-time emergency hospital tracker for PCMC & Pune")
-
-st.markdown("---")
+st.markdown(f"""
+    <div class="animated-header">
+        <div>
+            {animated_pulse_svg}
+        </div>
+        <div>
+            <h1 style="margin: 0; font-size: 2.4rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px;">
+                QuickCare
+            </h1>
+            <p style="margin: 4px 0 0 0; font-size: 1.05rem; color: #94A3B8;">
+                <span class="live-dot"></span>Real-Time Emergency Hospital & ICU Bed Tracker — PCMC & Pune
+            </p>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 3. Sidebar Configuration
+# 3. Sidebar API Integration
 # -------------------------------------------------------------
-st.sidebar.header("🔑 API / Live Integration")
-st.sidebar.info("Input official API Setu / e-RaktKosh keys to stream live government data.")
+st.sidebar.header("🔑 Live API Connection")
+st.sidebar.info("Connect API Setu / e-RaktKosh keys for live government blood bank integration.")
 
-api_key = st.sidebar.text_input("Enter API Key", type="password")
-client_id = st.sidebar.text_input("Enter Client ID / Org ID")
-data_source = st.sidebar.radio("Data Source Mode", ["Local City Hospital Directory", "Connect API Setu Stream"])
+api_key = st.sidebar.text_input("API Key", type="password")
+client_id = st.sidebar.text_input("Client ID / Org ID")
+data_source = st.sidebar.radio("Data Mode", ["Local Directory Mode", "Live API Stream Mode"])
 
 # -------------------------------------------------------------
-# 4. Dataset with Hospital Building Images
+# 4. Hospital Directory Dataset
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
-    if mode == "Connect API Setu Stream" and key and c_id:
+    if mode == "Live API Stream Mode" and key and c_id:
         try:
             url = "https://apisetu.gov.in/eraktkosh/v1/blood/availability"
             headers = {"X-API-KEY": key, "X-CLIENT-ID": c_id, "Accept": "application/json"}
             response = requests.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
-                st.sidebar.success("Connected to Government Live API Stream!")
-                return pd.DataFrame(response.json()), "Live API Setu Data"
+                st.sidebar.success("Stream Connected!")
+                return pd.DataFrame(response.json()), "Live API Stream Active"
         except Exception:
-            st.sidebar.warning("Connection failed. Showing verified local hospital directory.")
+            st.sidebar.warning("API Stream unreachable. Defaulting to local PCMC directory.")
 
-    real_hospitals = [
+    hospitals = [
         {
             "Hospital Name": "Yashwantrao Chavan Memorial Hospital (YCMH)",
-            "Area": "Pimpri, Pimpri-Chinchwad",
+            "Area": "Pimpri, PCMC",
             "Outside_Img": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=800&auto=format&fit=crop",
             "ICU Beds Free": 6,
             "Blood Stocks": "A+: 18 units | B+: 22 units | O+: 15 units | O-: 3 units",
-            "Doctor Shifts": "General/Emergency (24/7), OPD (08:30 - 12:30)",
+            "Doctor Shifts": "Trauma/Emergency (24/7), OPD (08:30 - 12:30)",
             "Emergency Contact": "+91-20-27420000 / 108",
             "Ambulance ETA": "5 mins"
         },
         {
             "Hospital Name": "Ruby Hall Clinic",
-            "Area": "Phase 1, Hinjawadi",
+            "Area": "Hinjawadi Phase 1, PCMC",
             "Outside_Img": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop",
             "ICU Beds Free": 2,
             "Blood Stocks": "A+: 6 units | B+: 11 units | O+: 9 units | O-: 1 unit",
-            "Doctor Shifts": "IT Zone Emergency (24/7), OPD (09:00 - 17:00)",
+            "Doctor Shifts": "Critical Care (24/7), OPD (09:00 - 17:00)",
             "Emergency Contact": "+91-20-66353333",
             "Ambulance ETA": "7 mins"
         },
@@ -118,17 +179,17 @@ def get_hospital_data(key, c_id, mode):
             "Outside_Img": "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format&fit=crop",
             "ICU Beds Free": 10,
             "Blood Stocks": "A+: 25 units | B+: 30 units | O+: 28 units | O-: 5 units",
-            "Doctor Shifts": "Trauma & Emergency Care (24/7)",
+            "Doctor Shifts": "Trauma & Burn Ward (24/7)",
             "Emergency Contact": "+91-20-26128000 / 108",
-            "Ambulance ETA": "15 mins"
+            "Ambulance ETA": "12 mins"
         },
         {
             "Hospital Name": "Aditya Birla Memorial Hospital",
-            "Area": "Chinchwad, Pimpri-Chinchwad",
+            "Area": "Chinchwad, PCMC",
             "Outside_Img": "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=800&auto=format&fit=crop",
             "ICU Beds Free": 4,
             "Blood Stocks": "A+: 10 units | B+: 14 units | O+: 8 units | O-: 2 units",
-            "Doctor Shifts": "Cardiology, Trauma & Emergency (24/7)",
+            "Doctor Shifts": "Cardiology & Emergency (24/7)",
             "Emergency Contact": "+91-20-30717500",
             "Ambulance ETA": "8 mins"
         },
@@ -138,22 +199,21 @@ def get_hospital_data(key, c_id, mode):
             "Outside_Img": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop",
             "ICU Beds Free": 8,
             "Blood Stocks": "A+: 12 units | B+: 8 units | O+: 20 units | O-: 4 units",
-            "Doctor Shifts": "Multispecialty & Emergency (24/7)",
+            "Doctor Shifts": "Multispecialty Emergency (24/7)",
             "Emergency Contact": "+91-20-27992799",
             "Ambulance ETA": "10 mins"
         }
     ]
-    return pd.DataFrame(real_hospitals), "Verified PCMC & Pune Hospital Directory"
+    return pd.DataFrame(hospitals), "Verified PCMC Directory"
 
 df, active_mode = get_hospital_data(api_key, client_id, data_source)
-st.caption(f"📍 **Active Directory:** `{active_mode}`")
 
 # -------------------------------------------------------------
-# 5. Search & Filters
+# 5. Live Search & Interactive Filters
 # -------------------------------------------------------------
 col_s1, col_s2 = st.columns([2.5, 1])
 with col_s1:
-    search = st.text_input("🔍 Search Hospital Name or Area (e.g. Pimpri, Hinjawadi, Baner, Station Road)", "")
+    search = st.text_input("🔍 Search Hospital or Locality (e.g. Pimpri, Hinjawadi, Chinchwad, Baner)", "")
 with col_s2:
     min_icu = st.slider("Minimum Available ICU Beds", 0, 10, 0)
 
@@ -165,8 +225,10 @@ if search:
     ]
 filtered_df = filtered_df[filtered_df["ICU Beds Free"] >= min_icu]
 
+st.markdown("---")
+
 # -------------------------------------------------------------
-# 6. Hospital Cards Output
+# 6. Display Hospital Cards
 # -------------------------------------------------------------
 if filtered_df.empty:
     st.warning("No hospitals found matching your filter criteria.")
@@ -175,23 +237,23 @@ else:
         with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
             img_col, info_col, blood_col, action_col = st.columns([1.5, 1.1, 1.2, 1.1])
             
-            # Column 1: Hospital Exterior Building Photo (Caption parameter removed)
+            # Column 1: Hospital Exterior Building View
             with img_col:
                 img_url = row.get("Outside_Img", "")
                 if img_url:
                     st.image(img_url, use_container_width=True)
             
-            # Column 2: Emergency Status
+            # Column 2: ICU & ETA Metrics
             with info_col:
                 st.markdown("#### 🚨 Emergency Status")
                 st.metric(label="ICU Beds Available", value=f"{row['ICU Beds Free']} Beds")
                 
                 st.markdown(f"""
                     <div style="margin-top: 10px;">
-                        <span class="badge-eta">⏱️ ETA: {row['Ambulance ETA']}</span>
+                        <span class="badge-eta">⏱️ Ambulance ETA: {row['Ambulance ETA']}</span>
                     </div>
                     <div style="margin-top: 8px;">
-                        <span class="badge-emergency">📞 {row['Emergency Contact']}</span>
+                        <span class="badge-emergency">📞 Emergency: {row['Emergency Contact']}</span>
                     </div>
                 """, unsafe_allow_html=True)
             
@@ -208,8 +270,8 @@ else:
                 p_name = st.text_input("Patient Full Name", key=f"p_{index}")
                 p_phone = st.text_input("Contact Number", key=f"ph_{index}")
                 
-                if st.button("Confirm Emergency Request", key=f"btn_{index}", use_container_width=True):
+                if st.button("Submit Emergency Alert", key=f"btn_{index}", use_container_width=True):
                     if p_name and p_phone:
-                        st.success(f"Request dispatched for **{p_name}**!")
+                        st.success(f"Emergency Alert Dispatched for **{p_name}**!")
                     else:
-                        st.warning("Fill in name and contact.")
+                        st.warning("Please provide patient details.")
