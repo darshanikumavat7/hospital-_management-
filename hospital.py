@@ -3,13 +3,29 @@ import pandas as pd
 import requests
 
 # -------------------------------------------------------------
-# 1. Page Configuration & Styling
+# 1. Page Configuration & Custom CSS Styling
 # -------------------------------------------------------------
 st.set_page_config(
     page_title="Pimpri-Chinchwad & Pune Hospital Tracker", 
     layout="wide", 
     page_icon="🏥"
 )
+
+# Custom CSS for UI improvement
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    div[data-testid="stExpander"] {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 12px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🏥 Pimpri-Chinchwad & Pune Emergency & Hospital Tracker")
 st.write("Compare real-time resource availability, ICU beds, blood bank contact, and emergency helplines across major hospitals.")
@@ -25,10 +41,9 @@ client_id = st.sidebar.text_input("Enter Client ID / Org ID")
 data_source = st.sidebar.radio("Data Source Mode", ["Local City Hospital Directory", "Connect API Setu Stream"])
 
 # -------------------------------------------------------------
-# 3. Real Hospital Dataset (Pimpri-Chinchwad / Pune Region)
+# 3. Real Hospital Dataset with Image URLs
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
-    # If API mode selected and credentials provided
     if mode == "Connect API Setu Stream" and key and c_id:
         try:
             url = "https://apisetu.gov.in/eraktkosh/v1/blood/availability"
@@ -40,20 +55,22 @@ def get_hospital_data(key, c_id, mode):
         except Exception:
             st.sidebar.warning("Connection failed. Showing verified local hospital directory.")
 
-    # Real Verified Local Hospitals
+    # Dataset with Verified Direct Images
     real_hospitals = [
         {
             "Hospital Name": "Yashwantrao Chavan Memorial Hospital (YCMH)",
             "Area": "Pimpri, Pimpri-Chinchwad",
+            "Image URL": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 6,
             "Blood Stocks": "A+: 18 | B+: 22 | O+: 15 | O-: 3",
             "Doctor Shifts": "General/Emergency (24/7), OPD (08:30 - 12:30)",
             "Emergency Contact": "+91-20-27420000 / 108",
-            "Ambulance ETA": "5 mins (PCMC Zone)"
+            "Ambulance ETA": "5 mins"
         },
         {
             "Hospital Name": "Aditya Birla Memorial Hospital",
             "Area": "Chinchwad, Pimpri-Chinchwad",
+            "Image URL": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 4,
             "Blood Stocks": "A+: 10 | B+: 14 | O+: 8 | O-: 2",
             "Doctor Shifts": "Cardiology, Trauma & Emergency (24/7)",
@@ -63,6 +80,7 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Jupiter Hospital",
             "Area": "Baner, Pune",
+            "Image URL": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 8,
             "Blood Stocks": "A+: 12 | B+: 8 | O+: 20 | O-: 4",
             "Doctor Shifts": "Multispecialty & Emergency (24/7)",
@@ -72,6 +90,7 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Ruby Hall Clinic (Hinjawadi)",
             "Area": "Phase 1, Hinjawadi",
+            "Image URL": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 2,
             "Blood Stocks": "A+: 6 | B+: 11 | O+: 9 | O-: 1",
             "Doctor Shifts": "IT Zone Emergency (24/7), OPD (09:00 - 17:00)",
@@ -81,6 +100,7 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Sassoon General Hospital",
             "Area": "Station Road, Pune",
+            "Image URL": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 10,
             "Blood Stocks": "A+: 25 | B+: 30 | O+: 28 | O-: 5",
             "Doctor Shifts": "Trauma & Emergency Care (24/7)",
@@ -96,11 +116,11 @@ st.caption(f"**Active Directory:** `{active_mode}`")
 # -------------------------------------------------------------
 # 4. Search & Filters
 # -------------------------------------------------------------
-col_s1, col_s2 = st.columns(2)
+col_s1, col_s2 = st.columns([2, 1])
 with col_s1:
     search = st.text_input("🔍 Search Hospital Name or Area (e.g. Pimpri, Chinchwad, Baner, Hinjawadi)", "")
 with col_s2:
-    min_icu = st.slider("Minimum Available ICU Beds", 0, 10, 0)
+    min_icu = st.slider("Minimum ICU Beds Needed", 0, 10, 0)
 
 filtered_df = df.copy()
 if search:
@@ -111,37 +131,41 @@ if search:
 filtered_df = filtered_df[filtered_df["ICU Beds Free"] >= min_icu]
 
 # -------------------------------------------------------------
-# 5. Display Cards
+# 5. Display Cards with Images & Metrics
 # -------------------------------------------------------------
 st.markdown("---")
 
 if filtered_df.empty:
-    st.warning("No hospitals found matching your area or ICU criteria.")
+    st.warning("No hospitals found matching your search criteria.")
 else:
     for index, row in filtered_df.iterrows():
-        with st.expander(f"🏥 **{row['Hospital Name']}** — {row['Area']}", expanded=True):
-            c1, c2, c3 = st.columns(3)
+        with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
+            img_col, info_col, blood_col, action_col = st.columns([1.2, 1.2, 1.2, 1])
             
-            with c1:
-                st.subheader("🚨 Emergency & ICU")
-                if row["ICU Beds Free"] > 0:
-                    st.success(f"**ICU Beds Available:** {row['ICU Beds Free']}")
-                else:
-                    st.error("**ICU Beds Available:** 0 (Full)")
-                st.info(f"**Ambulance ETA:** {row['Ambulance ETA']}")
-                st.write(f"📞 **Emergency Line:** `{row['Emergency Contact']}`")
+            # Column 1: Hospital Photo
+            with img_col:
+                st.image(row["Image URL"], use_container_width=True)
+            
+            # Column 2: Emergency Stats
+            with info_col:
+                st.subheader("🚨 Emergency Status")
+                st.metric("ICU Beds Free", f"{row['ICU Beds Free']} Beds")
+                st.write(f"⏱️ **Ambulance ETA:** `{row['Ambulance ETA']}`")
+                st.write(f"📞 **Emergency:** `{row['Emergency Contact']}`")
+            
+            # Column 3: Blood Stocks & Shifts
+            with blood_col:
+                st.subheader("🩸 Resources & Shifts")
+                st.caption("**Blood Bank Stock:**")
+                st.info(row["Blood Stocks"])
+                st.caption(f"**Doctor Shifts:** {row['Doctor Shifts']}")
                 
-            with c2:
-                st.subheader("🩸 Blood Bank Stocks")
-                st.write(row["Blood Stocks"])
-                
-            with c3:
-                st.subheader("👨‍⚕️ Doctor Shifts & Booking")
-                st.caption(f"**Shifts:** {row['Doctor Shifts']}")
-                
+            # Column 4: Quick Action Ticket
+            with action_col:
+                st.subheader("📝 Request Bed")
                 p_name = st.text_input("Patient Name", key=f"p_{index}")
-                if st.button("Submit Request", key=f"btn_{index}"):
+                if st.button("Submit Request", key=f"btn_{index}", use_container_width=True):
                     if p_name:
-                        st.success(f"✅ Emergency request logged for **{p_name}** at {row['Hospital Name']}.")
+                        st.success(f"Request sent for **{p_name}**!")
                     else:
-                        st.warning("Please enter patient name.")
+                        st.warning("Enter name first.")
