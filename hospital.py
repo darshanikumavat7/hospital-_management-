@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 
 # -------------------------------------------------------------
-# 1. Page Configuration
+# 1. Page Configuration & Modern CSS Styling
 # -------------------------------------------------------------
 st.set_page_config(
     page_title="QuickCare — PCMC & Pune Emergency Tracker", 
@@ -11,39 +11,11 @@ st.set_page_config(
     page_icon="⚡"
 )
 
-# -------------------------------------------------------------
-# 2. Custom CSS & Modern Dashboard Styling
-# -------------------------------------------------------------
 st.markdown("""
     <style>
-    /* Main Background */
     .stApp {
         background-color: #F8FAFC;
         font-family: 'Inter', sans-serif;
-    }
-    
-    /* QuickCare Header Styling */
-    .header-card {
-        background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%);
-        padding: 24px 30px;
-        border-radius: 16px;
-        color: white;
-        margin-bottom: 25px;
-        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.25);
-        display: flex;
-        align-items: center;
-        gap: 22px;
-    }
-    
-    /* QuickCare Logo Wrapper */
-    .logo-container {
-        background: rgba(255, 255, 255, 0.98);
-        padding: 14px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     }
     
     /* Expander Container Styling */
@@ -55,7 +27,7 @@ st.markdown("""
         margin-bottom: 18px;
     }
     
-    /* Quick Care Badges */
+    /* QuickCare Badges */
     .badge-eta {
         background-color: #EFF6FF;
         color: #1D4ED8;
@@ -80,40 +52,22 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 3. Custom QuickCare Shield & Lightning SVG Logo
+# 2. Native Header with QuickCare Branding
 # -------------------------------------------------------------
-quickcare_logo_svg = """
-<svg width="52" height="52" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Outer Shield Emblem -->
-  <path d="M32 4L8 12V28C8 42.8 18.2 56.4 32 60C45.8 56.4 56 42.8 56 28V12L32 4Z" fill="#1E40AF"/>
-  <path d="M32 7L11 14V28C11 40.8 20 52.6 32 56C44 52.6 53 40.8 53 28V14L32 7Z" fill="#2563EB"/>
-  
-  <!-- Central Pulse Line -->
-  <path d="M16 32H25L28 22L33 42L38 27L41 32H48" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-  
-  <!-- Quick Bolt Indicator -->
-  <path d="M34 16L24 33H33L30 46L40 29H31L34 16Z" fill="#EF4444" opacity="0.9"/>
-</svg>
-"""
+header_col1, header_col2 = st.columns([1, 6])
 
-st.markdown(f"""
-    <div class="header-card">
-        <div class="logo-container">
-            {quickcare_logo_svg}
-        </div>
-        <div>
-            <h1 style="margin: 0; font-size: 2.3rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
-                QuickCare
-            </h1>
-            <p style="margin: 3px 0 0 0; font-size: 1.05rem; color: #93C5FD; font-weight: 400;">
-                Instant Emergency Hospital & ICU Tracker — PCMC & Pune
-            </p>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+with header_col1:
+    # Reliable vector-style QuickCare emblem link
+    st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=75)
+
+with header_col2:
+    st.title("QuickCare")
+    st.caption("⚡ Real-time emergency hospital tracker for PCMC & Pune")
+
+st.markdown("---")
 
 # -------------------------------------------------------------
-# 4. Sidebar Configuration
+# 3. Sidebar Configuration
 # -------------------------------------------------------------
 st.sidebar.header("🔑 API / Live Integration")
 st.sidebar.info("Input official API Setu / e-RaktKosh keys to stream live government data.")
@@ -123,7 +77,7 @@ client_id = st.sidebar.text_input("Enter Client ID / Org ID")
 data_source = st.sidebar.radio("Data Source Mode", ["Local City Hospital Directory", "Connect API Setu Stream"])
 
 # -------------------------------------------------------------
-# 5. Dataset with Hospital Exterior Building Views
+# 4. Dataset with Hospital Building Images
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
     if mode == "Connect API Setu Stream" and key and c_id:
@@ -195,7 +149,7 @@ df, active_mode = get_hospital_data(api_key, client_id, data_source)
 st.caption(f"📍 **Active Directory:** `{active_mode}`")
 
 # -------------------------------------------------------------
-# 6. Search & Filters
+# 5. Search & Filters
 # -------------------------------------------------------------
 col_s1, col_s2 = st.columns([2.5, 1])
 with col_s1:
@@ -212,10 +166,8 @@ if search:
 filtered_df = filtered_df[filtered_df["ICU Beds Free"] >= min_icu]
 
 # -------------------------------------------------------------
-# 7. Card Content Display
+# 6. Hospital Cards Output
 # -------------------------------------------------------------
-st.markdown("---")
-
 if filtered_df.empty:
     st.warning("No hospitals found matching your filter criteria.")
 else:
@@ -223,15 +175,13 @@ else:
         with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
             img_col, info_col, blood_col, action_col = st.columns([1.5, 1.1, 1.2, 1.1])
             
-            # Column 1: Hospital Exterior Photo
+            # Column 1: Hospital Exterior Building Photo (Caption parameter removed)
             with img_col:
                 img_url = row.get("Outside_Img", "")
                 if img_url:
-                    st.image(img_url, caption="Building Exterior View", use_container_width=True)
-                else:
-                    st.caption("📷 Photo view pending update.")
+                    st.image(img_url, use_container_width=True)
             
-            # Column 2: ICU & ETA Metrics
+            # Column 2: Emergency Status
             with info_col:
                 st.markdown("#### 🚨 Emergency Status")
                 st.metric(label="ICU Beds Available", value=f"{row['ICU Beds Free']} Beds")
@@ -252,7 +202,7 @@ else:
                 st.info(row["Blood Stocks"])
                 st.caption(f"**Doctor Shifts:** {row['Doctor Shifts']}")
                 
-            # Column 4: Bed Booking Request
+            # Column 4: Quick Action Ticket
             with action_col:
                 st.markdown("#### 📝 Reserve Bed")
                 p_name = st.text_input("Patient Full Name", key=f"p_{index}")
