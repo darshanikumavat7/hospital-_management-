@@ -20,12 +20,12 @@ st.markdown("""
         font-family: 'Inter', system-ui, sans-serif;
     }
 
-    /* Subtitle Badge: Dark Blue Pill Background */
+    /* Subtitle Badge: Dark Navy Pill Background */
     .subtitle-badge {
         background: #0F172A;
         border: 2px solid #2563EB;
         border-radius: 30px;
-        padding: 8px 20px;
+        padding: 8px 22px;
         display: inline-flex;
         align-items: center;
         gap: 12px;
@@ -33,45 +33,28 @@ st.markdown("""
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
     }
 
-    /* Animated Glowing & Shimmering Subtitle Text */
+    /* Crisp White Animated Subtitle Text */
     .animated-subtitle-text {
+        color: #FFFFFF !important;
         font-weight: 800 !important;
         font-size: 0.95rem !important;
         letter-spacing: 0.8px;
         margin: 0;
         text-transform: uppercase;
         
-        /* Shimmer Gradient Effect */
-        background: linear-gradient(
-            90deg, 
-            #60A5FA 0%, 
-            #FFFFFF 30%, 
-            #93C5FD 50%, 
-            #FFFFFF 70%, 
-            #60A5FA 100%
-        );
-        background-size: 200% auto;
-        color: transparent;
-        -webkit-background-clip: text;
-        background-clip: text;
-        
-        /* Keyframe Animations: Shimmer Slide + Text Pulse Glow */
-        animation: shimmer 3s linear infinite, glowPulse 2s ease-in-out infinite alternate;
+        /* White Glowing Pulse Animation */
+        animation: whiteGlowPulse 1.8s ease-in-out infinite alternate;
     }
 
-    /* Shimmer movement keyframe */
-    @keyframes shimmer {
-        0% { background-position: 0% center; }
-        100% { background-position: 200% center; }
-    }
-
-    /* Soft text pulse glow keyframe */
-    @keyframes glowPulse {
+    /* Pure White Glow Animation Keyframes */
+    @keyframes whiteGlowPulse {
         0% {
-            filter: drop-shadow(0 0 2px rgba(96, 165, 250, 0.4));
+            text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), 0 0 6px rgba(59, 130, 246, 0.4);
+            opacity: 0.9;
         }
         100% {
-            filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.9));
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.95), 0 0 16px rgba(59, 130, 246, 0.8);
+            opacity: 1;
         }
     }
 
@@ -93,7 +76,7 @@ st.markdown("""
         100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Hospital Cards: White background with crisp border */
+    /* Hospital Cards */
     div[data-testid="stExpander"] {
         border: 2px solid #CBD5E1 !important;
         border-radius: 14px !important;
@@ -152,7 +135,7 @@ st.markdown("""
         background-color: #1D4ED8 !important;
     }
 
-    /* Dark Text Rules */
+    /* Global Dark Text Rules for Form Labels */
     label, p, h1, h2, h3, h4, span {
         color: #0F172A !important;
     }
@@ -160,7 +143,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 2. Header Section with Animated Subtitle Line
+# 2. Header Section with Pure White Animated Subtitle
 # -------------------------------------------------------------
 head_col1, head_col2 = st.columns([1, 8])
 
@@ -170,7 +153,7 @@ with head_col1:
 with head_col2:
     st.title("QuickCare")
     
-    # Animated Subtitle Line
+    # White Animated Subtitle Line
     st.markdown("""
         <div class="subtitle-badge">
             <span class="pulse-dot"></span>
@@ -191,7 +174,7 @@ client_id = st.sidebar.text_input("Client ID / Org ID")
 data_source = st.sidebar.radio("Data Source Mode", ["Local PCMC Directory", "Connect Live API Stream"])
 
 # -------------------------------------------------------------
-# 4. Hospital Dataset
+# 4. Verified PCMC Dataset
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
     if mode == "Connect Live API Stream" and key and c_id:
@@ -281,7 +264,7 @@ filtered_df = filtered_df[filtered_df["ICU Beds Free"] >= min_icu]
 st.markdown("---")
 
 # -------------------------------------------------------------
-# 6. Render High-Contrast Cards
+# 6. Render Hospital Cards
 # -------------------------------------------------------------
 if filtered_df.empty:
     st.warning("No hospitals found matching your search criteria.")
@@ -290,13 +273,13 @@ else:
         with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
             img_col, info_col, blood_col, action_col = st.columns([1.5, 1.2, 1.3, 1.1])
             
-            # Column 1: Hospital Image
+            # Column 1: Hospital Exterior View
             with img_col:
                 img_url = row.get("Outside_Img", "")
                 if img_url:
                     st.image(img_url, use_container_width=True)
             
-            # Column 2: Emergency Status
+            # Column 2: ICU Status & Metrics
             with info_col:
                 st.markdown("<h4 style='color: #0F172A; margin-bottom: 8px;'>🚨 ICU Status</h4>", unsafe_allow_html=True)
                 st.metric(label="ICU Beds Available", value=f"{row['ICU Beds Free']} Beds")
