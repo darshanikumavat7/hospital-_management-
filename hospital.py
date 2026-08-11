@@ -41,7 +41,7 @@ client_id = st.sidebar.text_input("Enter Client ID / Org ID")
 data_source = st.sidebar.radio("Data Source Mode", ["Local City Hospital Directory", "Connect API Setu Stream"])
 
 # -------------------------------------------------------------
-# 3. Real Hospital Dataset with Outside & Inside Views
+# 3. Real Hospital Dataset with Outside Building View
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
     if mode == "Connect API Setu Stream" and key and c_id:
@@ -55,13 +55,12 @@ def get_hospital_data(key, c_id, mode):
         except Exception:
             st.sidebar.warning("Connection failed. Showing verified local hospital directory.")
 
-    # Dataset with 2 distinct images per hospital (Outside vs Inside)
+    # Dataset with 1 verified outside building image per hospital
     real_hospitals = [
         {
             "Hospital Name": "Yashwantrao Chavan Memorial Hospital (YCMH)",
             "Area": "Pimpri, Pimpri-Chinchwad",
             "Outside_Img": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80",
-            "Inside_Img": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 6,
             "Blood Stocks": "A+: 18 | B+: 22 | O+: 15 | O-: 3",
             "Doctor Shifts": "General/Emergency (24/7), OPD (08:30 - 12:30)",
@@ -72,7 +71,6 @@ def get_hospital_data(key, c_id, mode):
             "Hospital Name": "Aditya Birla Memorial Hospital",
             "Area": "Chinchwad, Pimpri-Chinchwad",
             "Outside_Img": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
-            "Inside_Img": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 4,
             "Blood Stocks": "A+: 10 | B+: 14 | O+: 8 | O-: 2",
             "Doctor Shifts": "Cardiology, Trauma & Emergency (24/7)",
@@ -83,7 +81,6 @@ def get_hospital_data(key, c_id, mode):
             "Hospital Name": "Jupiter Hospital",
             "Area": "Baner, Pune",
             "Outside_Img": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80",
-            "Inside_Img": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 8,
             "Blood Stocks": "A+: 12 | B+: 8 | O+: 20 | O-: 4",
             "Doctor Shifts": "Multispecialty & Emergency (24/7)",
@@ -94,7 +91,6 @@ def get_hospital_data(key, c_id, mode):
             "Hospital Name": "Ruby Hall Clinic (Hinjawadi)",
             "Area": "Phase 1, Hinjawadi",
             "Outside_Img": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
-            "Inside_Img": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 2,
             "Blood Stocks": "A+: 6 | B+: 11 | O+: 9 | O-: 1",
             "Doctor Shifts": "IT Zone Emergency (24/7), OPD (09:00 - 17:00)",
@@ -105,7 +101,6 @@ def get_hospital_data(key, c_id, mode):
             "Hospital Name": "Sassoon General Hospital",
             "Area": "Station Road, Pune",
             "Outside_Img": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80",
-            "Inside_Img": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 10,
             "Blood Stocks": "A+: 25 | B+: 30 | O+: 28 | O-: 5",
             "Doctor Shifts": "Trauma & Emergency Care (24/7)",
@@ -136,7 +131,7 @@ if search:
 filtered_df = filtered_df[filtered_df["ICU Beds Free"] >= min_icu]
 
 # -------------------------------------------------------------
-# 5. Display Cards with Dual Image View
+# 5. Display Cards with Outside Building Photo Only
 # -------------------------------------------------------------
 st.markdown("---")
 
@@ -145,19 +140,12 @@ if filtered_df.empty:
 else:
     for index, row in filtered_df.iterrows():
         with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
-            img_col, info_col, blood_col, action_col = st.columns([1.6, 1.1, 1.1, 1])
+            img_col, info_col, blood_col, action_col = st.columns([1.4, 1.1, 1.1, 1])
             
-            # Column 1: Exactly 2 Images (Outside View & Inside View)
+            # Column 1: Single Outside View Image
             with img_col:
-                tab_out, tab_in = st.tabs(["Outside View", "Inside View"])
-                
-                with tab_out:
-                    if pd.notna(row.get("Outside_Img")) and row["Outside_Img"]:
-                        st.image(row["Outside_Img"], caption="Hospital Building / Exterior", use_container_width=True)
-                
-                with tab_in:
-                    if pd.notna(row.get("Inside_Img")) and row["Inside_Img"]:
-                        st.image(row["Inside_Img"], caption="Interior / Emergency Ward", use_container_width=True)
+                if pd.notna(row.get("Outside_Img")) and str(row["Outside_Img"]).strip():
+                    st.image(row["Outside_Img"], caption="Building Exterior View", use_container_width=True)
             
             # Column 2: Emergency Stats
             with info_col:
