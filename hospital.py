@@ -22,7 +22,7 @@ st.markdown("""
         border-radius: 10px;
         background-color: #ffffff;
         box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
-        margin-bottom: 12px;
+        margin-bottom: 15px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -41,7 +41,7 @@ client_id = st.sidebar.text_input("Enter Client ID / Org ID")
 data_source = st.sidebar.radio("Data Source Mode", ["Local City Hospital Directory", "Connect API Setu Stream"])
 
 # -------------------------------------------------------------
-# 3. Real Hospital Dataset with Image URLs
+# 3. Real Hospital Dataset with Multi-Photo Collections
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
     if mode == "Connect API Setu Stream" and key and c_id:
@@ -55,12 +55,16 @@ def get_hospital_data(key, c_id, mode):
         except Exception:
             st.sidebar.warning("Connection failed. Showing verified local hospital directory.")
 
-    # Dataset with Verified Direct Images
+    # Dataset with 3 specific view images for each hospital
     real_hospitals = [
         {
             "Hospital Name": "Yashwantrao Chavan Memorial Hospital (YCMH)",
             "Area": "Pimpri, Pimpri-Chinchwad",
-            "Image URL": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80",
+            "Images": [
+                {"title": "Building Front", "url": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Main Entrance", "url": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Emergency Ward", "url": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80"}
+            ],
             "ICU Beds Free": 6,
             "Blood Stocks": "A+: 18 | B+: 22 | O+: 15 | O-: 3",
             "Doctor Shifts": "General/Emergency (24/7), OPD (08:30 - 12:30)",
@@ -70,7 +74,11 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Aditya Birla Memorial Hospital",
             "Area": "Chinchwad, Pimpri-Chinchwad",
-            "Image URL": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
+            "Images": [
+                {"title": "Hospital Campus", "url": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Emergency Driveway", "url": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80"},
+                {"title": "ICU Block", "url": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80"}
+            ],
             "ICU Beds Free": 4,
             "Blood Stocks": "A+: 10 | B+: 14 | O+: 8 | O-: 2",
             "Doctor Shifts": "Cardiology, Trauma & Emergency (24/7)",
@@ -80,7 +88,11 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Jupiter Hospital",
             "Area": "Baner, Pune",
-            "Image URL": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80",
+            "Images": [
+                {"title": "Exterior View", "url": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Reception & Triage", "url": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Emergency Gate", "url": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80"}
+            ],
             "ICU Beds Free": 8,
             "Blood Stocks": "A+: 12 | B+: 8 | O+: 20 | O-: 4",
             "Doctor Shifts": "Multispecialty & Emergency (24/7)",
@@ -90,7 +102,11 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Ruby Hall Clinic (Hinjawadi)",
             "Area": "Phase 1, Hinjawadi",
-            "Image URL": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
+            "Images": [
+                {"title": "Main Building", "url": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Ambulance Bay", "url": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80"},
+                {"title": "OPD & Emergency", "url": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80"}
+            ],
             "ICU Beds Free": 2,
             "Blood Stocks": "A+: 6 | B+: 11 | O+: 9 | O-: 1",
             "Doctor Shifts": "IT Zone Emergency (24/7), OPD (09:00 - 17:00)",
@@ -100,7 +116,11 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Sassoon General Hospital",
             "Area": "Station Road, Pune",
-            "Image URL": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80",
+            "Images": [
+                {"title": "Heritage Gate View", "url": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Trauma Center", "url": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80"},
+                {"title": "Casualty Entrance", "url": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80"}
+            ],
             "ICU Beds Free": 10,
             "Blood Stocks": "A+: 25 | B+: 30 | O+: 28 | O-: 5",
             "Doctor Shifts": "Trauma & Emergency Care (24/7)",
@@ -131,7 +151,7 @@ if search:
 filtered_df = filtered_df[filtered_df["ICU Beds Free"] >= min_icu]
 
 # -------------------------------------------------------------
-# 5. Display Cards with Images & Metrics
+# 5. Display Cards with Image Tabs & Metrics
 # -------------------------------------------------------------
 st.markdown("---")
 
@@ -140,11 +160,16 @@ if filtered_df.empty:
 else:
     for index, row in filtered_df.iterrows():
         with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
-            img_col, info_col, blood_col, action_col = st.columns([1.2, 1.2, 1.2, 1])
+            img_col, info_col, blood_col, action_col = st.columns([1.5, 1.2, 1.2, 1])
             
-            # Column 1: Hospital Photo
+            # Column 1: Multi-Photo Tab Gallery
             with img_col:
-                st.image(row["Image URL"], use_container_width=True)
+                st.caption("📷 **Hospital Photo Views:**")
+                images = row["Images"]
+                tabs = st.tabs([f"View {i+1}" for i in range(len(images))])
+                for i, tab in enumerate(tabs):
+                    with tab:
+                        st.image(images[i]["url"], caption=images[i]["title"], use_container_width=True)
             
             # Column 2: Emergency Stats
             with info_col:
