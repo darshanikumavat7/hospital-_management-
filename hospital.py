@@ -6,7 +6,7 @@ import requests
 # 1. Page Configuration & Custom CSS Styling
 # -------------------------------------------------------------
 st.set_page_config(
-    page_title="Pimpri-Chinchwad & Pune Hospital Tracker", 
+    page_title="QuickCare - Emergency Hospital Tracker", 
     layout="wide", 
     page_icon="🏥"
 )
@@ -27,21 +27,21 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🏥 Pimpri-Chinchwad & Pune Emergency & Hospital Tracker")
-st.write("Compare real-time resource availability, ICU beds, blood bank contact, and emergency helplines across major hospitals.")
+st.title("🏥 QuickCare — PCMC & Pune Emergency Tracker")
+st.write("Real-time hospital tracker for ICU beds, blood bank availability, and emergency contacts.")
 
 # -------------------------------------------------------------
 # 2. Sidebar: Admin Configuration
 # -------------------------------------------------------------
 st.sidebar.header("🔑 API / Live Integration")
-st.sidebar.info("Input official API Setu / e-RaktKosh keys if connecting to live government blood bank network streams.")
+st.sidebar.info("Input official API Setu / e-RaktKosh keys to stream live government data.")
 
 api_key = st.sidebar.text_input("Enter API Key", type="password")
 client_id = st.sidebar.text_input("Enter Client ID / Org ID")
 data_source = st.sidebar.radio("Data Source Mode", ["Local City Hospital Directory", "Connect API Setu Stream"])
 
 # -------------------------------------------------------------
-# 3. Real Hospital Dataset with Outside Building View
+# 3. Hospital Dataset with Outside Building Views
 # -------------------------------------------------------------
 def get_hospital_data(key, c_id, mode):
     if mode == "Connect API Setu Stream" and key and c_id:
@@ -55,7 +55,7 @@ def get_hospital_data(key, c_id, mode):
         except Exception:
             st.sidebar.warning("Connection failed. Showing verified local hospital directory.")
 
-    # Dataset with 1 verified outside building image per hospital
+    # Dataset with single outside building image for each hospital
     real_hospitals = [
         {
             "Hospital Name": "Yashwantrao Chavan Memorial Hospital (YCMH)",
@@ -68,29 +68,9 @@ def get_hospital_data(key, c_id, mode):
             "Ambulance ETA": "5 mins"
         },
         {
-            "Hospital Name": "Aditya Birla Memorial Hospital",
-            "Area": "Chinchwad, Pimpri-Chinchwad",
-            "Outside_Img": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
-            "ICU Beds Free": 4,
-            "Blood Stocks": "A+: 10 | B+: 14 | O+: 8 | O-: 2",
-            "Doctor Shifts": "Cardiology, Trauma & Emergency (24/7)",
-            "Emergency Contact": "+91-20-30717500",
-            "Ambulance ETA": "8 mins"
-        },
-        {
-            "Hospital Name": "Jupiter Hospital",
-            "Area": "Baner, Pune",
-            "Outside_Img": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80",
-            "ICU Beds Free": 8,
-            "Blood Stocks": "A+: 12 | B+: 8 | O+: 20 | O-: 4",
-            "Doctor Shifts": "Multispecialty & Emergency (24/7)",
-            "Emergency Contact": "+91-20-27992799",
-            "Ambulance ETA": "10 mins"
-        },
-        {
-            "Hospital Name": "Ruby Hall Clinic (Hinjawadi)",
+            "Hospital Name": "Ruby Hall Clinic",
             "Area": "Phase 1, Hinjawadi",
-            "Outside_Img": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
+            "Outside_Img": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 2,
             "Blood Stocks": "A+: 6 | B+: 11 | O+: 9 | O-: 1",
             "Doctor Shifts": "IT Zone Emergency (24/7), OPD (09:00 - 17:00)",
@@ -100,12 +80,32 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Sassoon General Hospital",
             "Area": "Station Road, Pune",
-            "Outside_Img": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80",
+            "Outside_Img": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80",
             "ICU Beds Free": 10,
             "Blood Stocks": "A+: 25 | B+: 30 | O+: 28 | O-: 5",
             "Doctor Shifts": "Trauma & Emergency Care (24/7)",
             "Emergency Contact": "+91-20-26128000 / 108",
             "Ambulance ETA": "15 mins"
+        },
+        {
+            "Hospital Name": "Aditya Birla Memorial Hospital",
+            "Area": "Chinchwad, Pimpri-Chinchwad",
+            "Outside_Img": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
+            "ICU Beds Free": 4,
+            "Blood Stocks": "A+: 10 | B+: 14 | O+: 8 | O-: 2",
+            "Doctor Shifts": "Cardiology, Trauma & Emergency (24/7)",
+            "Emergency Contact": "+91-20-30717500",
+            "Ambulance ETA": "8 mins"
+        },
+        {
+            "Hospital Name": "Jupiter Hospital",
+            "Area": "Baner, Pune",
+            "Outside_Img": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80",
+            "ICU Beds Free": 8,
+            "Blood Stocks": "A+: 12 | B+: 8 | O+: 20 | O-: 4",
+            "Doctor Shifts": "Multispecialty & Emergency (24/7)",
+            "Emergency Contact": "+91-20-27992799",
+            "Ambulance ETA": "10 mins"
         }
     ]
     return pd.DataFrame(real_hospitals), "Verified PCMC & Pune Hospital Directory"
@@ -131,7 +131,7 @@ if search:
 filtered_df = filtered_df[filtered_df["ICU Beds Free"] >= min_icu]
 
 # -------------------------------------------------------------
-# 5. Display Cards with Outside Building Photo Only
+# 5. Display Cards with Outside Building Photo
 # -------------------------------------------------------------
 st.markdown("---")
 
@@ -142,7 +142,7 @@ else:
         with st.expander(f"🏥 **{row['Hospital Name']}** — *{row['Area']}*", expanded=True):
             img_col, info_col, blood_col, action_col = st.columns([1.4, 1.1, 1.1, 1])
             
-            # Column 1: Single Outside View Image
+            # Column 1: Outside Building Image
             with img_col:
                 if pd.notna(row.get("Outside_Img")) and str(row["Outside_Img"]).strip():
                     st.image(row["Outside_Img"], caption="Building Exterior View", use_container_width=True)
