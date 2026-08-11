@@ -55,12 +55,12 @@ def get_hospital_data(key, c_id, mode):
         except Exception:
             st.sidebar.warning("Connection failed. Showing verified local hospital directory.")
 
-    # Dataset with single outside building image for each hospital
+    # Hospital Directory with specific building URLs
     real_hospitals = [
         {
             "Hospital Name": "Yashwantrao Chavan Memorial Hospital (YCMH)",
             "Area": "Pimpri, Pimpri-Chinchwad",
-            "Outside_Img": "https://images.unsplash.com/photo-1587350853328-4745c4576f3e?auto=format&fit=crop&w=600&q=80",
+            "Outside_Img": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/YCM_Hospital_Pimpri.jpg/800px-YCM_Hospital_Pimpri.jpg",
             "ICU Beds Free": 6,
             "Blood Stocks": "A+: 18 | B+: 22 | O+: 15 | O-: 3",
             "Doctor Shifts": "General/Emergency (24/7), OPD (08:30 - 12:30)",
@@ -70,7 +70,7 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Ruby Hall Clinic",
             "Area": "Phase 1, Hinjawadi",
-            "Outside_Img": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
+            "Outside_Img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Ruby_Hall_Clinic_Hinjewadi.jpg/800px-Ruby_Hall_Clinic_Hinjewadi.jpg",
             "ICU Beds Free": 2,
             "Blood Stocks": "A+: 6 | B+: 11 | O+: 9 | O-: 1",
             "Doctor Shifts": "IT Zone Emergency (24/7), OPD (09:00 - 17:00)",
@@ -80,7 +80,7 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Sassoon General Hospital",
             "Area": "Station Road, Pune",
-            "Outside_Img": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80",
+            "Outside_Img": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Sassoon_Hospital_Pune.jpg/800px-Sassoon_Hospital_Pune.jpg",
             "ICU Beds Free": 10,
             "Blood Stocks": "A+: 25 | B+: 30 | O+: 28 | O-: 5",
             "Doctor Shifts": "Trauma & Emergency Care (24/7)",
@@ -90,7 +90,7 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Aditya Birla Memorial Hospital",
             "Area": "Chinchwad, Pimpri-Chinchwad",
-            "Outside_Img": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
+            "Outside_Img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Aditya_Birla_Hospital_Chinchwad.jpg/800px-Aditya_Birla_Hospital_Chinchwad.jpg",
             "ICU Beds Free": 4,
             "Blood Stocks": "A+: 10 | B+: 14 | O+: 8 | O-: 2",
             "Doctor Shifts": "Cardiology, Trauma & Emergency (24/7)",
@@ -100,7 +100,7 @@ def get_hospital_data(key, c_id, mode):
         {
             "Hospital Name": "Jupiter Hospital",
             "Area": "Baner, Pune",
-            "Outside_Img": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80",
+            "Outside_Img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Jupiter_Hospital_Baner_Pune.jpg/800px-Jupiter_Hospital_Baner_Pune.jpg",
             "ICU Beds Free": 8,
             "Blood Stocks": "A+: 12 | B+: 8 | O+: 20 | O-: 4",
             "Doctor Shifts": "Multispecialty & Emergency (24/7)",
